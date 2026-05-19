@@ -1,0 +1,13 @@
+{
+  "mode": "onenet_api",
+  "api_base": "http://api.heclouds.com",
+  "current_datapoints_base": "https://iot-api.heclouds.com",
+  "product_id": "YOUR_PRODUCT_ID",
+  "device_name": "YOUR_DEVICE_NAME",
+  "device_id": "YOUR_DEVICE_ID",
+  "api_access_key": "YOUR_API_ACCESS_KEY",
+  "device_access_key": "YOUR_DEVICE_ACCESS_KEY",
+  "api_resource": "products/YOUR_PRODUCT_ID",
+  "token_ttl_seconds": 3600,
+  "datastream_ids": ["temp", "humi", "tvoc", "pm25", "mode", "h_y", "p_y", "r1", "r2", "sg"]
+}

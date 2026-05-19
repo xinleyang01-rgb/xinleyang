@@ -1,0 +1,11 @@
+sys_interval is deprecated, use 'plugins' to define configuration
+'auth' and 'topic-check' are deprecated, use 'plugins' to define configuration
+C:\Users\23352\Documents\New project 2\wardrobe_web\run_broker.py:17: DeprecationWarning: Loading plugins from EntryPoints is deprecated and will be removed in a future version. Use `plugins` section of config instead.
+  broker = Broker(config)
+Configuration parameter 'password-file' not found
+No data from (client @=127.0.0.1:52575) : No more data
+Failed to initialize client session: No more data
+No data from (client @=127.0.0.1:53764) : No more data
+Failed to initialize client session: No more data
+No data from (client @=127.0.0.1:53038) : No more data
+Failed to initialize client session: No more data

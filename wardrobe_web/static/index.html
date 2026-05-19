@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>智能衣橱控制平台</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <h1>智能衣橱控制平台</h1>
+          <p>本系统以 STM32 单片机为核心，集成温湿度检测、TVOC 检测、粉尘监测、紫外消毒、通风除湿、人体感应照明和柜门控制功能，用于实现衣橱环境的健康管理与远程联动控制。</p>
+        </div>
+        <div class="topbar-side">
+          <div class="connection-pill pending" id="bridge-pill">
+            <span class="pill-dot"></span>
+            <span id="bridge-pill-text">正在连接云桥</span>
+          </div>
+          <dl class="meta-stack">
+            <div>
+              <dt>设备</dt>
+              <dd id="device-name">stm32</dd>
+            </div>
+            <div>
+              <dt>桥接方式</dt>
+              <dd id="bridge-provider">OneNET API</dd>
+            </div>
+            <div>
+              <dt>最近同步</dt>
+              <dd id="last-sync-at">等待首帧状态</dd>
+            </div>
+          </dl>
+        </div>
+      </header>
+
+      <section class="hero-panel">
+        <div class="hero-copy">
+          <h2>面向衣橱环境监测、健康存储和远程联动控制的一体化智能衣橱系统。</h2>
+          <p>
+            该智能衣橱能够实时监测柜内温度、湿度、TVOC 和粉尘浓度，并根据阈值自动执行通风、除湿和消毒控制。
+            同时结合人体感应、照明联动、舵机柜门开启与 OneNET 云平台通信，实现本地控制和远程管理一体化。
+          </p>
+          <div class="hero-chip-row">
+            <div class="hero-chip">
+              <span>当前模式</span>
+              <strong id="hero-mode">--</strong>
+            </div>
+            <div class="hero-chip">
+              <span>柜门状态</span>
+              <strong id="hero-door">--</strong>
+            </div>
+            <div class="hero-chip">
+              <span>通风状态</span>
+              <strong id="hero-vent">--</strong>
+            </div>
+            <div class="hero-chip">
+              <span>消毒状态</span>
+              <strong id="hero-sterilize">--</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-stage">
+          <div class="wardrobe-stage">
+            <div class="wardrobe-outline">
+              <div class="wardrobe-column">
+                <span class="rail rail-top"></span>
+                <span class="rail rail-bottom"></span>
+                <span class="hanger hanger-a"></span>
+                <span class="hanger hanger-b"></span>
+              </div>
+              <div class="wardrobe-column warm">
+                <span class="rail rail-top"></span>
+                <span class="rail rail-bottom"></span>
+                <span class="hanger hanger-c"></span>
+                <span class="hanger hanger-d"></span>
+              </div>
+            </div>
+            <div class="stage-float stage-float-left">
+              <span>温湿度</span>
+              <strong id="stage-temp-humi">-- / --</strong>
+            </div>
+            <div class="stage-float stage-float-right">
+              <span>空气质量</span>
+              <strong id="stage-air-quality">--</strong>
+            </div>
+            <div class="stage-glow"></div>
+          </div>
+        </div>
+      </section>
+
+      <main class="dashboard-grid">
+        <section class="panel metrics-panel">
+          <div class="panel-head">
+            <div>
+              <h3>环境监测</h3>
+              <p>来自设备最近一次上报的数据流。</p>
+            </div>
+            <div class="inline-tag" id="data-freshness">等待数据</div>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card metric-temp">
+              <span class="metric-label">温度</span>
+              <strong class="metric-value" id="metric-temp">--</strong>
+              <span class="metric-unit">°C</span>
+            </article>
+            <article class="metric-card metric-humi">
+              <span class="metric-label">湿度</span>
+              <strong class="metric-value" id="metric-humi">--</strong>
+              <span class="metric-unit">%RH</span>
+            </article>
+            <article class="metric-card metric-tvoc">
+              <span class="metric-label">TVOC / 甲醛</span>
+              <strong class="metric-value" id="metric-tvoc">--</strong>
+              <span class="metric-unit">mg/m³</span>
+            </article>
+            <article class="metric-card metric-pm25">
+              <span class="metric-label">粉尘浓度</span>
+              <strong class="metric-value" id="metric-pm25">--</strong>
+              <span class="metric-unit">mg/m³</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel insight-panel">
+          <div class="panel-head">
+            <div>
+              <h3>设备态势</h3>
+              <p>把执行部件状态、阈值和风险提示放在同一视图里。</p>
+            </div>
+          </div>
+
+          <div class="state-grid">
+            <article class="state-card">
+              <span>工作模式</span>
+              <strong id="state-mode">--</strong>
+            </article>
+            <article class="state-card">
+              <span>柜门</span>
+              <strong id="state-door">--</strong>
+            </article>
+            <article class="state-card">
+              <span>消毒继电器</span>
+              <strong id="state-sterilize">--</strong>
+            </article>
+            <article class="state-card">
+              <span>通风继电器</span>
+              <strong id="state-vent">--</strong>
+            </article>
+            <article class="state-card">
+              <span>湿度阈值</span>
+              <strong id="state-h-threshold">--</strong>
+            </article>
+            <article class="state-card">
+              <span>粉尘阈值</span>
+              <strong id="state-p-threshold">--</strong>
+            </article>
+          </div>
+
+          <div class="health-strip">
+            <div class="health-item">
+              <span class="health-label">空气判断</span>
+              <strong id="health-air">等待数据</strong>
+            </div>
+            <div class="health-item">
+              <span class="health-label">湿度判断</span>
+              <strong id="health-humi">等待数据</strong>
+            </div>
+            <div class="health-item">
+              <span class="health-label">系统反馈</span>
+              <strong id="health-feedback">等待同步</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel control-panel">
+          <div class="panel-head">
+            <div>
+              <h3>远程控制</h3>
+              <p>命令先进入桥接队列，再等待设备上报确认。</p>
+            </div>
+            <div class="inline-tag neutral" id="pending-indicator">当前无待确认命令</div>
+          </div>
+
+          <div class="control-cluster">
+            <div class="cluster-head">
+              <h4>模式切换</h4>
+              <span>手动模式下可直接控制消毒继电器。</span>
+            </div>
+            <div class="button-grid mode-grid">
+              <button class="action-btn mode-btn" data-mode="0">手动</button>
+              <button class="action-btn mode-btn" data-mode="1">智能</button>
+              <button class="action-btn mode-btn" data-mode="2">定时</button>
+            </div>
+          </div>
+
+          <div class="control-cluster">
+            <div class="cluster-head">
+              <h4>柜门与执行部件</h4>
+              <span>柜门、消毒和通风控制使用设备现有命令格式；点击消毒控制时会自动切换到手动模式后执行。</span>
+            </div>
+            <div class="button-grid">
+              <button class="action-btn" id="door-open-btn">开柜门</button>
+              <button class="action-btn" id="door-close-btn">关柜门</button>
+              <button class="action-btn" id="ster-open-btn">消毒开启</button>
+              <button class="action-btn" id="ster-close-btn">消毒关闭</button>
+              <button class="action-btn" id="vent-open-btn">通风开启</button>
+              <button class="action-btn" id="vent-close-btn">通风关闭</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel settings-panel">
+          <div class="panel-head">
+            <div>
+              <h3>阈值与定时设置</h3>
+              <p>默认湿度阈值为 60%RH，默认粉尘阈值为 10%，并支持下发定时消毒起止时间。</p>
+            </div>
+          </div>
+
+          <form class="settings-form" id="settings-form">
+            <label>
+              <span>湿度阈值</span>
+              <input id="humidity-input" type="number" min="0" max="100" step="1" value="60" />
+            </label>
+            <label>
+              <span>粉尘阈值</span>
+              <input id="pm-input" type="number" min="0" max="100" step="1" value="10" />
+            </label>
+            <label>
+              <span>开始时间</span>
+              <input id="start-input" type="time" />
+            </label>
+            <label>
+              <span>结束时间</span>
+              <input id="end-input" type="time" />
+            </label>
+            <button class="save-btn" id="settings-btn" type="submit">下发湿度、粉尘阈值与定时设置</button>
+          </form>
+
+          <div class="settings-note">
+            <strong>兼容说明</strong>
+            <p>系统当前以 60%RH 作为湿度控制参考值，以 10% 作为粉尘控制参考值；通风快捷开关仍复用设备原有兼容指令，最终状态以设备上报为准。</p>
+          </div>
+        </section>
+
+        <section class="panel timeline-panel">
+          <div class="panel-head">
+            <div>
+              <h3>命令日志</h3>
+              <p>展示桥接响应、最近命令结果和页面侧事件轨迹。</p>
+            </div>
+          </div>
+
+          <div class="command-summary" id="command-summary">
+            <div>
+              <span>最近命令状态</span>
+              <strong id="command-state">idle</strong>
+            </div>
+            <div>
+              <span>最近命令时间</span>
+              <strong id="command-updated-at">--</strong>
+            </div>
+          </div>
+
+          <ul class="timeline-list" id="timeline-list"></ul>
+        </section>
+
+        <section class="panel lookup-panel">
+          <div class="panel-head">
+            <div>
+              <h3>衣物智能查找</h3>
+              <p>结合季节、使用场景、材质和收纳区域，为常用衣物提供更智能的检索与收纳建议，后续可继续接入 RFID 精确定位。</p>
+            </div>
+          </div>
+
+          <div class="lookup-tools">
+            <label class="search-box">
+              <span>搜索衣物、场景或区域</span>
+              <input id="lookup-input" type="search" placeholder="例如：答辩、通勤、羽绒服、抽屉、夏季" />
+            </label>
+          </div>
+
+          <div class="lookup-grid" id="lookup-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

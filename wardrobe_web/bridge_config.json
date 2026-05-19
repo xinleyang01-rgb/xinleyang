@@ -1,0 +1,14 @@
+{
+  "mode": "onenet_api",
+  "api_base": "http://api.heclouds.com",
+  "current_datapoints_base": "https://iot-api.heclouds.com",
+  "current_datapoints_authorization": "version=2022-05-01&res=userid%2F521891&et=1778951420&method=sha1&sign=cvdMwqj5M5YL0kJ29MosVQryAwg%3D",
+  "product_id": "PU3721W9C4",
+  "device_name": "stm32",
+  "device_id": "2592570552",
+  "api_access_key": "f2XN78l/az93zz+HUwH1J30V529HwR+vh50bTVXB2x0=",
+  "device_access_key": "azlraXdmMlBsVkRxcTRTNHR4OFZWRGJ1dmhqUURuV3o=",
+  "api_resource": "products/PU3721W9C4",
+  "token_ttl_seconds": 3600,
+  "datastream_ids": ["temp", "humi", "tvoc", "pm25", "mode", "h_y", "p_y", "r1", "r2", "sg"]
+}

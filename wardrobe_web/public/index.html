@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>智能衣柜远程控制</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">OneNET 直连控制台</p>
+          <h1>单片机智能衣柜</h1>
+          <p class="subtitle">查看环境数据、切换模式、执行柜门与消毒控制，并保留衣物查找入口。</p>
+        </div>
+        <div class="status-pill pending" id="platform-status">
+          <span class="dot"></span>
+          <span id="platform-status-text">正在连接 OneNET</span>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel panel-metrics">
+          <div class="panel-head">
+            <div>
+              <h2>环境监测</h2>
+              <p>当前来自设备最新数据流</p>
+            </div>
+            <div class="panel-note" id="updated-at">等待设备上报</div>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card">
+              <span class="metric-label">温度</span>
+              <strong class="metric-value" id="metric-temp">--</strong>
+              <span class="metric-unit">℃</span>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">湿度</span>
+              <strong class="metric-value" id="metric-humi">--</strong>
+              <span class="metric-unit">%RH</span>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">TVOC</span>
+              <strong class="metric-value" id="metric-tvoc">--</strong>
+              <span class="metric-unit">mg/m³</span>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">PM2.5</span>
+              <strong class="metric-value" id="metric-pm25">--</strong>
+              <span class="metric-unit">mg/m³</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="control-columns">
+          <section class="panel panel-state">
+            <div class="panel-head">
+              <div>
+                <h2>设备状态</h2>
+                <p>根据设备上报结果高亮当前状态</p>
+              </div>
+            </div>
+
+            <div class="state-grid">
+              <article class="state-card">
+                <span class="state-label">模式</span>
+                <strong id="state-mode">--</strong>
+              </article>
+              <article class="state-card">
+                <span class="state-label">柜门</span>
+                <strong id="state-door">--</strong>
+              </article>
+              <article class="state-card">
+                <span class="state-label">消毒</span>
+                <strong id="state-sterilize">--</strong>
+              </article>
+              <article class="state-card">
+                <span class="state-label">通风</span>
+                <strong id="state-vent">--</strong>
+              </article>
+              <article class="state-card">
+                <span class="state-label">湿度阈值</span>
+                <strong id="state-h-threshold">--</strong>
+              </article>
+              <article class="state-card">
+                <span class="state-label">粉尘阈值</span>
+                <strong id="state-p-threshold">--</strong>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel panel-controls">
+            <div class="panel-head">
+              <div>
+                <h2>远程控制</h2>
+                <p>按钮先即时反馈，再等待设备真实上报确认</p>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="group-label">模式切换</div>
+              <div class="button-row button-row-3">
+                <button class="control-btn mode-btn" data-mode="0">手动</button>
+                <button class="control-btn mode-btn" data-mode="1">智能</button>
+                <button class="control-btn mode-btn" data-mode="2">定时</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="group-label">柜门控制</div>
+              <div class="button-row">
+                <button class="control-btn pair-btn" id="door-open-btn">开柜门</button>
+                <button class="control-btn pair-btn" id="door-close-btn">关柜门</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="group-label">消毒控制</div>
+              <div class="button-row">
+                <button class="control-btn pair-btn" id="ster-open-btn">消毒开</button>
+                <button class="control-btn pair-btn" id="ster-close-btn">消毒关</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="group-label">通风控制</div>
+              <div class="button-row">
+                <button class="control-btn pair-btn" id="vent-open-btn">通风开</button>
+                <button class="control-btn pair-btn" id="vent-close-btn">通风关</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="group-label">阈值与定时</div>
+              <div class="input-grid">
+                <label>
+                  <span>湿度阈值</span>
+                  <input id="humidity-input" type="number" min="0" max="101" />
+                </label>
+                <label>
+                  <span>粉尘阈值</span>
+                  <input id="pm-input" type="number" step="0.01" min="0" max="1" />
+                </label>
+                <label>
+                  <span>开始时间</span>
+                  <input id="start-input" type="time" value="05:00" />
+                </label>
+                <label>
+                  <span>结束时间</span>
+                  <input id="end-input" type="time" value="12:00" />
+                </label>
+              </div>
+              <button class="control-btn wide primary" id="settings-btn">发送阈值与定时设置</button>
+            </div>
+
+            <div class="feedback-box" id="feedback-box">等待命令发送</div>
+          </section>
+        </section>
+
+        <section class="panel panel-finder">
+          <div class="panel-head">
+            <div>
+              <h2>衣物智能查找</h2>
+              <p>先保留查找入口，后续可继续扩展搜索和分类。</p>
+            </div>
+          </div>
+
+          <div class="finder-grid">
+            <div class="finder-card">
+              <h3>白衬衫</h3>
+              <p>A区上层 / 常穿 / 可与深灰西裤搭配</p>
+            </div>
+            <div class="finder-card">
+              <h3>浅蓝牛仔外套</h3>
+              <p>B区中层 / 春秋 / 靠近照明区</p>
+            </div>
+            <div class="finder-card">
+              <h3>黑色卫衣</h3>
+              <p>B区下层 / 秋冬 / 日常高频取用</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

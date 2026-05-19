@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>智能衣柜远程控制 V2</title>
+    <link rel="stylesheet" href="./remote-v2.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="hero">
+        <div>
+          <p class="tag">OneNET 直连 · V2</p>
+          <h1>智能衣柜远程控制</h1>
+          <p class="desc">这个版本只做一件事：让控制状态看得清楚，点完之后能知道到底是已发送、已生效，还是设备没有上报。</p>
+        </div>
+        <div class="status status-pending" id="platform-status">
+          <span class="dot"></span>
+          <span id="platform-status-text">正在连接 OneNET</span>
+        </div>
+      </header>
+
+      <section class="panel metrics">
+        <div class="panel-head">
+          <div>
+            <h2>环境监测</h2>
+            <p>直接读取设备当前数据流</p>
+          </div>
+          <strong id="updated-at">等待设备上报</strong>
+        </div>
+        <div class="metric-grid">
+          <article class="metric">
+            <span>温度</span>
+            <strong id="metric-temp">--</strong>
+            <em>℃</em>
+          </article>
+          <article class="metric">
+            <span>湿度</span>
+            <strong id="metric-humi">--</strong>
+            <em>%RH</em>
+          </article>
+          <article class="metric">
+            <span>TVOC</span>
+            <strong id="metric-tvoc">--</strong>
+            <em>mg/m³</em>
+          </article>
+          <article class="metric">
+            <span>PM2.5</span>
+            <strong id="metric-pm25">--</strong>
+            <em>mg/m³</em>
+          </article>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>设备状态</h2>
+              <p>只显示设备真正上报的结果</p>
+            </div>
+          </div>
+          <div class="state-grid">
+            <article class="state-card"><span>模式</span><strong id="state-mode">--</strong></article>
+            <article class="state-card"><span>柜门</span><strong id="state-door">--</strong></article>
+            <article class="state-card"><span>消毒</span><strong id="state-r1">--</strong></article>
+            <article class="state-card"><span>通风</span><strong id="state-r2">--</strong></article>
+            <article class="state-card"><span>湿度阈值</span><strong id="state-h-threshold">--</strong></article>
+            <article class="state-card"><span>粉尘阈值</span><strong id="state-p-threshold">--</strong></article>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>远程控制</h2>
+              <p>黑色表示当前状态；深蓝边框表示命令发送中</p>
+            </div>
+          </div>
+
+          <div class="group">
+            <label>模式切换</label>
+            <div class="button-grid cols-3">
+              <button class="ctrl mode-btn" data-mode="0">手动</button>
+              <button class="ctrl mode-btn" data-mode="1">智能</button>
+              <button class="ctrl mode-btn" data-mode="2">定时</button>
+            </div>
+          </div>
+
+          <div class="group">
+            <label>柜门控制</label>
+            <div class="button-grid">
+              <button class="ctrl" id="door-open">开柜门</button>
+              <button class="ctrl" id="door-close">关柜门</button>
+            </div>
+          </div>
+
+          <div class="group">
+            <label>消毒控制</label>
+            <div class="button-grid">
+              <button class="ctrl" id="ster-open">消毒开</button>
+              <button class="ctrl" id="ster-close">消毒关</button>
+            </div>
+          </div>
+
+          <div class="group">
+            <label>通风控制</label>
+            <div class="button-grid">
+              <button class="ctrl" id="vent-open">通风开</button>
+              <button class="ctrl" id="vent-close">通风关</button>
+            </div>
+          </div>
+
+          <div class="group">
+            <label>阈值与定时</label>
+            <div class="input-grid">
+              <input id="humidity-input" type="number" placeholder="湿度阈值" />
+              <input id="pm-input" type="number" step="0.01" placeholder="粉尘阈值" />
+              <input id="start-input" type="time" value="05:00" />
+              <input id="end-input" type="time" value="12:00" />
+            </div>
+            <button class="ctrl full primary" id="settings-btn">发送阈值与定时设置</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel debug">
+        <div class="panel-head">
+          <div>
+            <h2>命令调试信息</h2>
+            <p>方便直接判断到底是页面问题还是设备执行层问题</p>
+          </div>
+          <strong id="version-badge">V2</strong>
+        </div>
+        <div class="debug-grid">
+          <div>
+            <span class="debug-label">最后一条命令</span>
+            <pre id="debug-command">--</pre>
+          </div>
+          <div>
+            <span class="debug-label">页面提示</span>
+            <pre id="debug-feedback">等待命令发送</pre>
+          </div>
+          <div>
+            <span class="debug-label">最近状态快照</span>
+            <pre id="debug-state">--</pre>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="./remote-v2.js"></script>
+  </body>
+</html>
